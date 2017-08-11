@@ -1,0 +1,24 @@
+{
+  "name": "noflake-database",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leadpython/noflake-database.git"
+  },
+  "author": "leadpython",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leadpython/noflake-database/issues"
+  },
+  "homepage": "https://github.com/leadpython/noflake-database#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "mongodb": "^2.2.28"
+  }
+}
