@@ -52,15 +52,15 @@ router.get('/providers/:providerID/employees/:employeeID/appointments', (request
   provider.getAppointments(request, response);
 });
 // Add Appointment
-router.post('/providers/:id/appointments', (request, response) => {
+router.post('/providers/:providerID/employees/:employeeID/appointments', (request, response) => {
   provider.addAppointment(request, response);
 });
 // Edit Appointment
-router.put('/providers/:id/appointments/:appointment', (request, response) => {
+router.put('/providers/:providerID/employees/:employeeID/appointments', (request, response) => {
   provider.editAppointment(request, response);
 });
 // Delete Appointment
-router.delete('/providers/:id/appointments:appointment', (request, response) => {
+router.delete('/providers/:providerID/employees/:employeeID/appointments', (request, response) => {
   provider.deleteAppointment(request, response);
 });
 
