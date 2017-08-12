@@ -1,6 +1,8 @@
 var crypto = require('crypto');
 var ObjectId = require('mongodb').ObjectId;
-var collectionName = 'providers';
+var providerCollection = 'providers';
+var employeeCollection = 'employees';
+var appointmentsCollection = 'appointments';
 var _database;
 
 class Provider {
@@ -8,7 +10,7 @@ class Provider {
   login(request, response) {
     let payload = {};
     // find user with email
-    _database.collection(collectionName).findOne({ 'email': request.body.email }).then((data) => {
+    _database.collection(providerCollection).findOne({ 'email': request.body.email }).then((data) => {
       if (data) {
         // if user exists
         // authenticate and respond with result
@@ -25,7 +27,7 @@ class Provider {
   register(request, response) {
     let payload = {};
     // check if user already exists first
-    _database.collection(collectionName).findOne({ 'handle': request.body.handle }).then((data) => {
+    _database.collection(providerCollection).findOne({ 'handle': request.body.handle }).then((data) => {
       if (data) {
         // if user already exists
         // respond with registration failure
@@ -35,7 +37,7 @@ class Provider {
         // if user does not exist
         // register with information
         let provider = initializeProvider(request.body);
-        _database.collection(collectionName).insert(provider).then((data) => {
+        _database.collection(providerCollection).insert(provider).then((data) => {
           response.json(payload);
         });
       }
@@ -54,149 +56,91 @@ class Provider {
       'firstname': true,
       'lastname': true
     };
-    _database.collection(collectionName).find( { $or: searchInput }, options).toArray((data) => {
-      response.json(data);
+    _database.collection(providerCollection).find( { $or: searchInput }, options).toArray((searchResults) => {
+      response.json(searchResults);
     });
   }
+
+  // ----- EMPLOYEES -----
+  // GET EMPLOYEES
   getEmployees(request, response) {
-    _database.collection(collectionName).findOne({ '_id': ObjectId(request.params.providerID) }, { 'employees': true }).then((data) => {
-      response.json(data);
+    _database.collection(providerCollection).findOne({ '_id': ObjectId(request.params.providerID) }, { 'employees': true }).then((employees) => {
+      _database.collection(employeeCollection).find({ _id: { $in: employees } }).toArray((employees) => {
+        response.json(employees);
+      });
     });
   }
-  getEmployeeServices(request, response) {
-    _database.collection(collectionName).findOne({ '_id': ObjectId(request.params.providerID) }, { 'employees': true }).then((data) => {
-      let services = employees[request.params.employeeID];
-      respoonse.json(services);
+  // ADD EMPLOYEE
+  addEmployee(request, response) {
+    let employee = createEmployee(request.body);
+    _database.collection(employeeCollection).insert(employee).then((employee) => {
+      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $push: { employees: employee._id } }).then((data) => {
+        response.json('Success!');
+      });
     });
   }
-  getEmployeeAppointments(request,response) {
-    
+  // GET EMPLOYEE SERVICES
+  getServices(request, response) {
+    _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { services: true}).then((employee) => {
+      response.json(employee.services);
+    });
   }
-  // getVendors(request, response) {
-  //   _database.collection(collectionName).find({}).toArray((error, data) => {
-  //     response.json(data);
-  //   });
-  // }
-  // searchVendors(request, response) {
-  //   let regex = new RegExp(request.params.input, 'i');
-  //   let searchInput = [
-  //     {'username': { $regex: regex }},
-  //     { 'firstname': { $regex: regex }},
-  //     {'lastname': { $regex: regex }}
-  //   ];
-  //   let options = {
-  //     'username': true,
-  //     'firstname': true,
-  //     'lastname': true,
-  //   };
-  //   _database.collection(collectionName).find({ $or: searchInput }, options).toArray((error, data) => {
-
-  //     response.json(data); 
-  //   });
-  // }
-  // getVendorServices(request, response) {
-  //   _database.collection(collectionName).findOne({ '_id': ObjectId(request.params.id) }, { 'services': true }).then((data) => {
-  //     response.json(data);
-  //   })
-  // }
-  // getVendorAppointments(request, response) {
-  //   _database.collection(collectionName).findOne({ '_id': ObjectId(request.params.id) }, { 'appointments': true }).then((data) => {
-  //     response.json(data);
-  //   });
-  // }
-  // addServiceToVendor(request, response) {
-  //   let service = {
-  //     name: request.body.name,
-  //     cost: request.body.cost,
-  //     duration: request.body.duration,
-  //     serviceId: crypto.randomBytes(16).toString('hex')
-  //   }
-  //   _database.collection(collectionName).updateOne({ '_id': ObjectId(request.body.id) }, { $push: { services: service } }).then((data) => {
-  //     _database.collection(collectionName).findOne( { '_id': ObjectId(request.body.id) }, { 'services': true }).then((data) => {
-  //       response.json(data);
-  //     })
-  //   })
-  // }
-  // authenticateVendor(request, response) {
-  //   // collects information regarding authentication
-  //   let authInfo = {
-  //     doesUserExist: false,
-  //     isUserAuthenticated: false,
-  //   };
-  //   _database.collection(collectionName).findOne({ "email": request.body.email }).then((data) => {
-  //     // Check if user exists
-  //     if (data) {
-  //       // user exists, proceed to authentication
-  //       authInfo.doesUserExist = true;
-  //       if (data.credentials.hash === crypto.pbkdf2Sync(request.body.password, data.credentials.salt, 1000, 64).toString('hex')) {
-  //         // authentication success
-  //         authInfo.isUserAuthenticated = true;
-
-  //         // generate token 
-  //         authInfo.token = crypto.randomBytes(16).toString('hex');
-  //         authInfo.id = data._id;
-  //         _database.collection(collectionName).updateOne({ '_id': data._id }, { $set: { 'token': authInfo.token, 'sessionExpiration': (Date.now() + sessionDuration) } });
-  //       }
-  //     }
-  //     // respond with authentication information
-  //     response.json(authInfo);
-  //   }, (error) => {
-  //     response.status(400).json(false);
-  //   });
-  // }
-  // registerVendor(request, response) {
-  //   let regInfo = {
-  //     doesUserExist: false,
-  //     registrationSuccess: false
-  //   };
-  //   _database.collection(collectionName).findOne({ 'email': request.body.email }).then((data) => {
-  //     if (data) {
-  //       regInfo.doesUserExist = true;
-  //       response.json(regInfo);
-  //     } else {
-  //       let salt = crypto.randomBytes(16).toString('hex');
-  //       let userRecord = {
-  //         username: request.body.username,
-  //         email: request.body.email,
-  //         credentials: {
-  //           salt: salt,
-  //           hash: crypto.pbkdf2Sync(request.body.password, salt, 1000, 64).toString('hex')
-  //         },
-  //         firstname: request.body.firstname,
-  //         lastname: request.body.lastname,
-  //         services: [],
-  //         appointments: []
-  //       };
-  //       _database.collection(collectionName).insertOne(userRecord).then((data) => {
-  //         regInfo.registrationSuccess = true;
-  //         regInfo.email = request.body.email;
-  //         regInfo = request.body.password;
-  //         response.status(201).json(regInfo);
-  //       }, (error) => {
-  //         regInfo.registrationSuccess = false;
-  //         response.status(400).json(regInfo);
-  //       });
-  //     }
-  //   }); 
-  // }
-  // checkSession(request, response) {
-  //   var isSessionDone = false;
-  //   _database.collection(collectionName).findOne({ '_id': ObjectId(request.body.id) }, { 'sessionExpiration': true, 'token': true }).then((data) => {
-  //     if (data.token === request.body.token) {
-  //       if (Number(data.sessionExpiration) < Date.now()) {
-  //         isSessionDone = true;
-  //         // eliminate token
-  //         _database.collection(collectionName).updateOne({ '_id': ObjectId(request.body.id) }, { $set: { 'token': crypto.randomBytes(16).toString('hex') } } );
-  //         _data
-  //       } else {
-  //         isSessionDone = false;
-  //         // reset session expiration, 10 more minutes
-  //         _database.collection(collectionName).updateOne({ '_id': ObjectId(request.body.id) }, { $set: { 'sessionExpiration': (Date.now() + sessionDuration) } } );
-  //       }
-  //     }
-  //     response.json(isSessionDone);
-  //   });
-  // }
+  // ADD EMPLOYEE SERVICE
+  addService(request, response) {
+    let service = createService(request.body);
+    _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.params.employeeID) }, { $push: { services: service } }).then((data) => {
+      response.json('Success!');
+    });
+  }
+  // EDIT EMPLOYEE SERVICE
+  editService(request, response) {
+    _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }).then((employee) => {
+      let service = createService(request.body, true);
+      employee.services[service.id] = service;
+      _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.params.employeeID) }, employee).then((data) => {
+        response.json('Success!');
+      });
+    });
+  }
+  // DELETE EMPLOYEE SERVICE
+  deleteService(request, response) {
+    _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }).then((employee) => {
+      let service = createService(request.body, true);
+      delete employee.services[request.body.id];
+      _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.params.employeeID) }, employee).then((data) => {
+        response.json('Success!');
+      });
+    });
+  }
+  // GET EMPLOYEE APPOINTMENTS
+  getAppointments(request, response) {
+    _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { appointments: true }).then((employee) => {
+      _database.collection(appointmentsCollection).find({ _id: { $in: employee.appointments } }).toArray((appointments) => {
+        response.json(appointments);
+      });
+    })
+  }
+  // ADD APPOINTMENT
+  addAppointment(request, response) {
+    let appointment = createAppointment(request.body);
+    _database.collection(appointmentsCollection).insert(appointment).then((appointment) => {
+      _database.collection(employeeCollection).updateOne({ _id: ObjectId(appointment.employeeID) }, { $push: { services: appointment._id } }).then((data) => {
+        response.json('Success!');
+      });
+    });
+  }
+  // EDIT APPOINTMENT
+  editAppointment(request, response) {
+    let appointment = createAppointment(request.body);
+    _database.collection(appointmentsCollection).updateOne({ _id: ObjectId(appointment._id) }, appointment).then((data) => {
+      response.json('Success!');
+    })
+  }
+  deleteAppointment(request, response) {
+    _database.collection(appointmentsCollection).deleteOne({ _id: ObjectId(request.body.id) }).then((data) => {
+      response.json('Success!');
+    })
+  }
   setDatabase(database) {
     _database = database;
   }
@@ -206,12 +150,8 @@ const provider = new Provider();
 module.exports = provider;
 
 
-// ERROR HANDLER
-function errorHandler(response, error) {
-  response.json(error);
-}
+// ----- HELPER METHODS -----
 
-// PROVIDER METHODS
 function initializeProvider(info) {
   let salt = crypto.randomBytes(16).toString('hex');
   let hash = crypto.pbkdf2Sync(request.body.password, salt, 1000, 64).toString('hex');
@@ -224,32 +164,39 @@ function initializeProvider(info) {
         salt: salt
       }
     },
-    employees: {}
-  }
+    employees: []
+  };
+  return provider;
 }
 function createEmployee(info) {
   let employee = {
+    providerID: info.providerID,
     username: info.username,
     name: info.name,
     email: info.email,
     services: {},
-    appointments: {}
+    appointments: []
   };
   return employee;
 }
-function createService(info) {
+function createService(info, editMode) {
+  if (!editMode) {
+    let id = crypto.randomBytes(16).toString('hex')
+  } else {
+    let id = info.id
+  }
   let service = {
-    id: crypto.randomBytes(16).toString('hex'),
+    id: id,
     type: info.type,
     cost: info.cost,
-    duration: info.duration
+    duration: info.duration,
+    providerID: info.providerID,
+    employeeID: info.employeeID
   };
   return service;
 }
 function createAppointment(info) {
   let appointment = {
-    id: crypto.randomBytes(16).toString('hex'),
-    serviceId: info.serviceId,
     date: {
       day: info.date.day,
       month: info.date.month,
@@ -258,7 +205,10 @@ function createAppointment(info) {
     timeslot: {
       begin: info.timeslot.begin,
       end: info.timeslot.end
-    }
+    },
+    serviceID: info.serviceID,
+    providerID: info.providerID,
+    employeeID: info.employeeID,
   };
   return appointment;
 }
