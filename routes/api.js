@@ -11,19 +11,24 @@ router.put('/providers/login', (request, response) => {
 });
 // Register
 router.post('/providers/register', (request, response) => {
-
+  provider.register(request, response);
 });
 
 // SEARCH
 // Search Provider
 router.get('/providers/search/:input', (request, response) => {
-
+  provider.search(request, response);
 });
 
-// PROVIDER SERVICES
-// Get Services
-router.get('/providers/:id/services', (request, response) => {
+// PROVIDER EMPLOYEES
+router.get('/providers/:providerID/employees', (request, response) => {
+  provider.getEmployees(request, response);
+});
 
+// EMPLOYEE SERVICES
+// Get Services
+router.get('/providers/:providerID/employees/:employeeID/services', (request, response) => {
+  provider.getServices(request, response);
 });
 // Add Service
 router.post('/providers/:id/services', (request, response) => {

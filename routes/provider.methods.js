@@ -14,11 +14,10 @@ class Provider {
         // authenticate and respond with result
         payload.doesUserExist = true;
         payload.isUserAuthenticated = data.credentials.hash === crypto.pbkdf2Sync(request.body.password, data.credentials.salt, 1000, 64).toString('hex');
-        response.status(200).json(payload);
+        response.json(payload);
       } else { // if user does not exist
         // respond with authentication failure
-        payload.doesUserExist = false;
-        response.status(200).json(payload);
+        response.json(payload);
       }
     });
   }
@@ -26,22 +25,56 @@ class Provider {
   register(request, response) {
     let payload = {};
     // check if user already exists first
-    _database.collection(collectionName).findOne({ 'email': request.body.email }).then((data) => {
+    _database.collection(collectionName).findOne({ 'handle': request.body.handle }).then((data) => {
       if (data) {
         // if user already exists
         // respond with registration failure
         payload.doesUserExist = true;
-        response.status(200).json(payload);
+        response.json(payload);
       } else {
         // if user does not exist
-        // register
+        // register with information
+        let provider = initializeProvider(request.body);
+        _database.collection(collectionName).insert(provider).then((data) => {
+          response.json(payload);
+        });
       }
     });
   }
-
+  // SEARCH
+  search(request, response) {
+    let regex = new RegExp(request.params.input, 'i');
+    let searchInput = [
+      { 'username': { $regex: regex} },
+      { 'firstname': { $regex: regex} },
+      { 'lastname': { $regex: regex} },
+    ];
+    let options = {
+      'username': true,
+      'firstname': true,
+      'lastname': true
+    };
+    _database.collection(collectionName).find( { $or: searchInput }, options).toArray((data) => {
+      response.json(data);
+    });
+  }
+  getEmployees(request, response) {
+    _database.collection(collectionName).findOne({ '_id': ObjectId(request.params.providerID) }, { 'employees': true }).then((data) => {
+      response.json(data);
+    });
+  }
+  getEmployeeServices(request, response) {
+    _database.collection(collectionName).findOne({ '_id': ObjectId(request.params.providerID) }, { 'employees': true }).then((data) => {
+      let services = employees[request.params.employeeID];
+      respoonse.json(services);
+    });
+  }
+  getEmployeeAppointments(request,response) {
+    
+  }
   // getVendors(request, response) {
   //   _database.collection(collectionName).find({}).toArray((error, data) => {
-  //     response.status(200).json(data);
+  //     response.json(data);
   //   });
   // }
   // searchVendors(request, response) {
@@ -58,17 +91,17 @@ class Provider {
   //   };
   //   _database.collection(collectionName).find({ $or: searchInput }, options).toArray((error, data) => {
 
-  //     response.status(200).json(data); 
+  //     response.json(data); 
   //   });
   // }
   // getVendorServices(request, response) {
   //   _database.collection(collectionName).findOne({ '_id': ObjectId(request.params.id) }, { 'services': true }).then((data) => {
-  //     response.status(200).json(data);
+  //     response.json(data);
   //   })
   // }
   // getVendorAppointments(request, response) {
   //   _database.collection(collectionName).findOne({ '_id': ObjectId(request.params.id) }, { 'appointments': true }).then((data) => {
-  //     response.status(200).json(data);
+  //     response.json(data);
   //   });
   // }
   // addServiceToVendor(request, response) {
@@ -80,7 +113,7 @@ class Provider {
   //   }
   //   _database.collection(collectionName).updateOne({ '_id': ObjectId(request.body.id) }, { $push: { services: service } }).then((data) => {
   //     _database.collection(collectionName).findOne( { '_id': ObjectId(request.body.id) }, { 'services': true }).then((data) => {
-  //       response.status(200).json(data);
+  //       response.json(data);
   //     })
   //   })
   // }
@@ -106,7 +139,7 @@ class Provider {
   //       }
   //     }
   //     // respond with authentication information
-  //     response.status(200).json(authInfo);
+  //     response.json(authInfo);
   //   }, (error) => {
   //     response.status(400).json(false);
   //   });
@@ -119,7 +152,7 @@ class Provider {
   //   _database.collection(collectionName).findOne({ 'email': request.body.email }).then((data) => {
   //     if (data) {
   //       regInfo.doesUserExist = true;
-  //       response.status(200).json(regInfo);
+  //       response.json(regInfo);
   //     } else {
   //       let salt = crypto.randomBytes(16).toString('hex');
   //       let userRecord = {
@@ -161,7 +194,7 @@ class Provider {
   //         _database.collection(collectionName).updateOne({ '_id': ObjectId(request.body.id) }, { $set: { 'sessionExpiration': (Date.now() + sessionDuration) } } );
   //       }
   //     }
-  //     response.status(200).json(isSessionDone);
+  //     response.json(isSessionDone);
   //   });
   // }
   setDatabase(database) {
@@ -171,3 +204,61 @@ class Provider {
 
 const provider = new Provider();
 module.exports = provider;
+
+
+// ERROR HANDLER
+function errorHandler(response, error) {
+  response.json(error);
+}
+
+// PROVIDER METHODS
+function initializeProvider(info) {
+  let salt = crypto.randomBytes(16).toString('hex');
+  let hash = crypto.pbkdf2Sync(request.body.password, salt, 1000, 64).toString('hex');
+  let provider = {
+    credentials: {
+      handle: info.handle,
+      email: info.email,
+      passwordInfo: {
+        hash: hash,
+        salt: salt
+      }
+    },
+    employees: {}
+  }
+}
+function createEmployee(info) {
+  let employee = {
+    username: info.username,
+    name: info.name,
+    email: info.email,
+    services: {},
+    appointments: {}
+  };
+  return employee;
+}
+function createService(info) {
+  let service = {
+    id: crypto.randomBytes(16).toString('hex'),
+    type: info.type,
+    cost: info.cost,
+    duration: info.duration
+  };
+  return service;
+}
+function createAppointment(info) {
+  let appointment = {
+    id: crypto.randomBytes(16).toString('hex'),
+    serviceId: info.serviceId,
+    date: {
+      day: info.date.day,
+      month: info.date.month,
+      year: info.date.year,
+    },
+    timeslot: {
+      begin: info.timeslot.begin,
+      end: info.timeslot.end
+    }
+  };
+  return appointment;
+}
