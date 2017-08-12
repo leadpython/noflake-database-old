@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var provider = require('./provider.methods.js').router;
+var provider = require('./provider.methods.js');
 
 // ---------- PROVIDER ROUTES ----------
 
