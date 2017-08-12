@@ -57,7 +57,7 @@ class Provider {
       'name': true
     };
     _database.collection(providerCollection).find( { $or: searchInput } ).toArray((searchResults) => {
-      response.json(searchResults);
+      response.json('searchResults');
     });
   }
 
