@@ -4,7 +4,7 @@ var mongodb = require('mongodb');
 var routes = require('./routes/api');
 var app = express();
 
-var Provider = require('./routes/providers.methods');
+var Provider = require('./routes/provider.methods');
 
 app.use(bodyParser.json());
 app.use((request, response, next) => {
