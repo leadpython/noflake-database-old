@@ -154,7 +154,7 @@ module.exports = provider;
 
 function initializeProvider(info) {
   let salt = crypto.randomBytes(16).toString('hex');
-  let hash = crypto.pbkdf2Sync(request.body.password, salt, 1000, 64).toString('hex');
+  let hash = crypto.pbkdf2Sync(info.password, salt, 1000, 64).toString('hex');
   let provider = {
     handle: info.handle,
     email: info.email,
