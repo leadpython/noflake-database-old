@@ -47,16 +47,16 @@ class Provider {
   search(request, response) {
     let regex = new RegExp(request.params.input, 'i');
     let searchInput = [
-      { 'username': { $regex: regex} },
-      { 'firstname': { $regex: regex} },
-      { 'lastname': { $regex: regex} },
+      { 'handle': { $regex: regex} },
+      { 'email': { $regex: regex} },
+      { 'name': { $regex: regex} },
     ];
     let options = {
-      'username': true,
-      'firstname': true,
-      'lastname': true
+      'handle': true,
+      'email': true,
+      'name': true
     };
-    _database.collection(providerCollection).find( { $or: searchInput }, options).toArray((searchResults) => {
+    _database.collection(providerCollection).find( { $or: searchInput }).toArray((searchResults) => {
       response.json(searchResults);
     });
   }
@@ -156,13 +156,12 @@ function initializeProvider(info) {
   let salt = crypto.randomBytes(16).toString('hex');
   let hash = crypto.pbkdf2Sync(request.body.password, salt, 1000, 64).toString('hex');
   let provider = {
+    handle: info.handle,
+    email: info.email,
+    name: info.name,
     credentials: {
-      handle: info.handle,
-      email: info.email,
-      passwordInfo: {
-        hash: hash,
-        salt: salt
-      }
+      hash: hash,
+      salt: salt
     },
     employees: []
   };
