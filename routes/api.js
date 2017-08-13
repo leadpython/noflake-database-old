@@ -14,7 +14,6 @@ router.post('/providers/register', (request, response) => {
   provider.register(request, response);
 });
 
-// SEARCH
 // Search Provider
 router.get('/providers/search/:input', (request, response) => {
   provider.search(request, response);

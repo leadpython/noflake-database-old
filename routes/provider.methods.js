@@ -75,8 +75,8 @@ class Provider {
     let employee = createEmployee(request.body);
     employee.providerID = request.params.providerID;
     _database.collection(employeeCollection).insert(employee).then((employee) => {
-      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $push: { employees: employee._id } }).then((data) => {
-        response.json('Success!');
+      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $push: { employees: employee['_id'] } }).then((data) => {
+        response.json(data);
       });
     });
   }
