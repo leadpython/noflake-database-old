@@ -76,7 +76,9 @@ class Provider {
     let employee = createEmployee(request.body);
     employee.providerID = request.params.providerID;
     _database.collection(employeeCollection).insert(employee).then((data) => {
-      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $push: { employees: data.ops[0]._id.toString() } }).then((data) => {
+      let newEmployee = {};
+      newEmployee[data.ops[0]._id.toString()] = true;
+      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $set: { employees: { $set: newEmployee } } }).then((data) => {
         response.json('Success!');
       });
     });
@@ -165,7 +167,8 @@ function initializeProvider(info) {
       hash: hash,
       salt: salt
     },
-    employees: []
+    employees: {},
+    services: {}
   };
   return provider;
 }
@@ -175,8 +178,7 @@ function createEmployee(info) {
     username: info.username,
     name: info.name,
     email: info.email,
-    services: {},
-    appointments: []
+    appointments: {}
   };
   return employee;
 }
