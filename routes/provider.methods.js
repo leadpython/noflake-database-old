@@ -64,7 +64,8 @@ class Provider {
   // ----- EMPLOYEES -----
   // GET EMPLOYEES
   getEmployees(request, response) {
-    _database.collection(providerCollection).findOne({ '_id': ObjectId(request.params.providerID) }, { 'employees': true }).then((employees) => {
+    _database.collection(providerCollection).findOne({ '_id': ObjectId(request.params.providerID) }, { 'employees': true }).then((data) => {
+      response.json(data);
       _database.collection(employeeCollection).find({ _id: { $in: employees } }).toArray((employees) => {
         response.json(employees);
       });
@@ -74,9 +75,9 @@ class Provider {
   addEmployee(request, response) {
     let employee = createEmployee(request.body);
     employee.providerID = request.params.providerID;
-    _database.collection(employeeCollection).insert(employee).then((employee) => {
-      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $push: { employees: employee['_id'] } }).then((data) => {
-        response.json(employee);
+    _database.collection(employeeCollection).insert(employee).then((data) => {
+      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $push: { employees: data.ops[0]._id } }).then((data) => {
+        response.json('Success!');
       });
     });
   }
