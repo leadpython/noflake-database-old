@@ -74,13 +74,19 @@ class Provider {
   // ADD EMPLOYEE
   addEmployee(request, response) {
     let employee = createEmployee(request.body);
-    employee.providerID = request.params.providerID;
     _database.collection(employeeCollection).insert(employee).then((data) => {
-      let newEmployee = {};
-      newEmployee["employees." + data.ops[0]._id.toString()] = true;
-      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $set: newEmployee }).then((data) => {
+      let query = {};
+      query[`employees.${data.ops[0]._id.toString()}`] = true;
+      _database.collection(providerCollection).updateOne({ _id: ObjectId(employee.providerID) }, { $set: query }).then((data) => {
         response.json('Success!');
       });
+    });
+  }
+  // DELETE EMPLOYEE
+  addEmployee(request, response) {
+    let employee = createEmployee(request.body);
+    _database.collection(employeeCollection).delete({ _id: employeee.id }).then((data) => {
+      
     });
   }
   // GET EMPLOYEE SERVICES
@@ -92,7 +98,9 @@ class Provider {
   // ADD EMPLOYEE SERVICE
   addService(request, response) {
     let service = createService(request.body);
-    _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.params.employeeID) }, { $push: { services: service } }).then((data) => {
+    let query = {};
+    query[`services.${service.id}`] = service;
+    _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $set: query }).then((data) => {
       response.json('Success!');
     });
   }
@@ -168,7 +176,6 @@ function initializeProvider(info) {
       salt: salt
     },
     employees: {},
-    services: {}
   };
   return provider;
 }
@@ -184,7 +191,7 @@ function createEmployee(info) {
 }
 function createService(info, editMode) {
   if (!editMode) {
-    let id = crypto.randomBytes(16).toString('hex')
+    let id = new ObjectId();
   } else {
     let id = info.id
   }
