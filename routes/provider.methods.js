@@ -73,6 +73,7 @@ class Provider {
   // ADD EMPLOYEE
   addEmployee(request, response) {
     let employee = createEmployee(request.body);
+    employee.providerID = request.params.providerID;
     _database.collection(employeeCollection).insert(employee).then((employee) => {
       _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $push: { employees: employee._id } }).then((data) => {
         response.json('Success!');
@@ -139,7 +140,7 @@ class Provider {
   deleteAppointment(request, response) {
     _database.collection(appointmentsCollection).deleteOne({ _id: ObjectId(request.body.id) }).then((data) => {
       response.json('Success!');
-    })
+    });
   }
   setDatabase(database) {
     _database = database;
