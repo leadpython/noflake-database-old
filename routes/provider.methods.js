@@ -103,9 +103,10 @@ class Provider {
     let service = createService(request.body);
     let set = {};
     set[`services.${service._id}`] = service;
-    _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: set }).then((data) => {
-      response.json('Success!');
-    });
+    response.json(set);
+    // _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: set }).then((data) => {
+    //   response.json('Success!');
+    // });
   }
   // EDIT EMPLOYEE SERVICE
   editService(request, response) {
@@ -196,7 +197,7 @@ function createService(info, editMode) {
   if (!editMode) {
     let id = new ObjectId();
   } else {
-    let id = info.id
+    let id = info._id
   }
   let service = {
     _id: id,
@@ -223,13 +224,6 @@ function createAppointment(info) {
     employeeID: info.employeeID,
   };
   return appointment;
-}
-function objectToArray(object) {
-  let array = [];
-  for (let key in object) {
-    array.push(object[key]);
-  }
-  return array;
 }
 function keysToArray(object) {
   let array = [];
