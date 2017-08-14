@@ -75,9 +75,9 @@ class Provider {
   addEmployee(request, response) {
     let employee = createEmployee(request.body);
     _database.collection(employeeCollection).insert(employee).then((data) => {
-      let query = {};
-      query[`employees.${data.ops[0]._id.toString()}`] = true;
-      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $set: query }).then((data) => {
+      let set = {};
+      set[`employees.${data.ops[0]._id.toString()}`] = true;
+      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $set: set }).then((data) => {
         response.json('Success!');
       });
     });
@@ -86,7 +86,7 @@ class Provider {
   deleteEmployee(request, response) {
     _database.collection(employeeCollection).deleteOne({ _id: ObjectId(request.params.employeeID) }).then((data) => {
       let query = {};
-      query[`employees.${request.params.employeeID}`] = true;
+      query[`employees.${request.params.employeeID}`] = "";
       _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $unset: query }).then((data) => {
         response.json("Success!");
       });
