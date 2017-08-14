@@ -85,7 +85,9 @@ class Provider {
   // DELETE EMPLOYEE
   deleteEmployee(request, response) {
     _database.collection(employeeCollection).deleteOne({ _id: ObjectId(request.params.employeeID) }).then((data) => {
-      _database.collection(providerCollection).findOne({ _id: ObjectId(request.params.providerID) }).then((data) => {
+      let query = {};
+      query[`employees.${request.params.employeeID}`] = true;
+      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $unset: query }).then((data) => {
         response.json("Success!");
       });
     });
