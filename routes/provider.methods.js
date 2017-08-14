@@ -77,7 +77,7 @@ class Provider {
     _database.collection(employeeCollection).insert(employee).then((data) => {
       let query = {};
       query[`employees.${data.ops[0]._id.toString()}`] = true;
-      _database.collection(providerCollection).updateOne({ _id: ObjectId(employee.providerID) }, { $set: query }).then((data) => {
+      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $set: query }).then((data) => {
         response.json('Success!');
       });
     });
