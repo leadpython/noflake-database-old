@@ -94,8 +94,8 @@ class Provider {
 
   // GET EMPLOYEE SERVICES
   getServices(request, response) {
-    _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { services: true}).then((employee) => {
-      response.json(objectToArray(employee.services));
+    _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { services: true}).then((data) => {
+      response.json(data);
     });
   }
   // ADD EMPLOYEE SERVICE
