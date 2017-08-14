@@ -64,7 +64,7 @@ class Provider {
   // ----- EMPLOYEES -----
   // GET EMPLOYEES
   getEmployees(request, response) {
-    _database.collection(providerCollection).findOne({ '_id': ObjectId(request.params.providerID) }, { 'employees': true }).then((data) => {
+    _database.collection(providerCollection).findOne({ '_id': ObjectId(request.body.providerID) }, { 'employees': true }).then((data) => {
       response.json(data.employees);
       _database.collection(employeeCollection).find({ _id: { $in: data.employees } }).toArray((error, data) => {
         // response.json(data);
@@ -77,17 +77,17 @@ class Provider {
     _database.collection(employeeCollection).insert(employee).then((data) => {
       let set = {};
       set[`employees.${data.ops[0]._id.toString()}`] = true;
-      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $set: set }).then((data) => {
+      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.body.providerID) }, { $set: set }).then((data) => {
         response.json('Success!');
       });
     });
   }
   // DELETE EMPLOYEE
   deleteEmployee(request, response) {
-    _database.collection(employeeCollection).deleteOne({ _id: ObjectId(request.params.employeeID) }).then((data) => {
+    _database.collection(employeeCollection).deleteOne({ _id: ObjectId(request.body.employeeID) }).then((data) => {
       let unset = {};
-      unset[`employees.${request.params.employeeID}`] = "";
-      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $unset: unset }).then((data) => {
+      unset[`employees.${request.body.employeeID}`] = "";
+      _database.collection(providerCollection).updateOne({ _id: ObjectId(request.body.providerID) }, { $unset: unset }).then((data) => {
         response.json("Success!");
       });
     });

@@ -24,11 +24,11 @@ router.get('/providers/:providerID/employees', (request, response) => {
   provider.getEmployees(request, response);
 });
 // ADD EMPLOYEE
-router.post('/providers/:providerID/employees', (request, response) => {
+router.post('/providers/employees', (request, response) => {
   provider.addEmployee(request, response);
 });
 // DELETE EMPLOYEE
-router.delete('/providers/:providerID/employees/:employeeID', (request, response) => {
+router.delete('/providers/employees', (request, response) => {
   provider.deleteEmployee(request, response);
 });
 
