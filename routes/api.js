@@ -28,7 +28,7 @@ router.post('/providers/:providerID/employees', (request, response) => {
   provider.addEmployee(request, response);
 });
 // DELETE EMPLOYEE
-router.post('/providers/:providerID/employees/:employeeID', (request, response) => {
+router.delete('/providers/:providerID/employees/:employeeID', (request, response) => {
   provider.deleteEmployee(request, response);
 });
 
