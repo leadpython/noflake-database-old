@@ -66,9 +66,9 @@ class Provider {
   getEmployees(request, response) {
     _database.collection(providerCollection).findOne({ '_id': ObjectId(request.body.providerID) }, { 'employees': true }).then((data) => {
       response.json(data.employees);
-      _database.collection(employeeCollection).find({ _id: { $in: data.employees } }).toArray((error, data) => {
-        // response.json(data);
-      });
+      // _database.collection(employeeCollection).find({ _id: { $in: data.employees } }).toArray((error, data) => {
+      //   response.json(data);
+      // });
     });
   }
   // ADD EMPLOYEE
@@ -92,18 +92,19 @@ class Provider {
       });
     });
   }
+
   // GET EMPLOYEE SERVICES
   getServices(request, response) {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { services: true}).then((employee) => {
-      response.json(employee.services);
+      response.json(objectToArray(employee.services));
     });
   }
   // ADD EMPLOYEE SERVICE
   addService(request, response) {
     let service = createService(request.body);
-    let query = {};
-    query[`services.${service.id}`] = service;
-    _database.collection(providerCollection).updateOne({ _id: ObjectId(request.params.providerID) }, { $set: query }).then((data) => {
+    let set = {};
+    set[`services.${service.id}`] = service;
+    _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: set }).then((data) => {
       response.json('Success!');
     });
   }
@@ -224,4 +225,11 @@ function createAppointment(info) {
     employeeID: info.employeeID,
   };
   return appointment;
+}
+function objectToArray(object) {
+  let array = [];
+  for (let key in object) {
+    array.push({ key: key, content: object[key] });
+  }
+  return array;
 }

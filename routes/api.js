@@ -34,11 +34,11 @@ router.delete('/providers/employees', (request, response) => {
 
 // EMPLOYEE SERVICES
 // Get Services
-router.get('/providers/:providerID/employees/:employeeID/services', (request, response) => {
+router.get('/providers/employees/:employeeID/services', (request, response) => {
   provider.getServices(request, response);
 });
 // Add Service
-router.post('/providers/:providerID/employees/:employeeID/services', (request, response) => {
+router.post('/providers/employees/services', (request, response) => {
   provider.addService(request, response);
 });
 // Edit Service
