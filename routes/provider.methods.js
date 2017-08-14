@@ -100,7 +100,8 @@ class Provider {
   }
   // ADD EMPLOYEE SERVICE
   addService(request, response) {
-    let service = createService(request.body);
+    response.json(request.body);
+    // let service = createService(request.body);
     // let set = {};
     // set[`services.${service._id}`] = service;
     // response.json(service);
