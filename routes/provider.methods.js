@@ -64,8 +64,8 @@ class Provider {
   // ----- EMPLOYEES -----
   // GET EMPLOYEES
   getEmployees(request, response) {
-    _database.collection(providerCollection).findOne({ '_id': ObjectId(request.params.providerID) }, { 'employees': true }).then((data) => {
-      response.json(data);
+    _database.collection(providerCollection).findOne({ _id: ObjectId(request.params.providerID) }, { employees: true }).then((data) => {
+      response.json(keysToArray(data.employees));
       // _database.collection(employeeCollection).find({ _id: { $in: keysToArray(data.employees) } }).toArray((error, data) => {
       //   response.json(data);
       // });
