@@ -100,14 +100,13 @@ class Provider {
   }
   // ADD EMPLOYEE SERVICE
   addService(request, response) {
-    response.json(request.body);
-    // let service = createService(request.body);
-    // let set = {};
-    // set[`services.${service._id}`] = service;
-    // response.json(service);
-    // _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: set }).then((data) => {
-    //   response.json('Success!');
-    // });
+    let service = createService(request.body);
+    let set = {};
+    set[`services.${service._id}`] = service;
+    response.json(service);
+    _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: set }).then((data) => {
+      response.json('Success!');
+    });
   }
   // EDIT EMPLOYEE SERVICE
   editService(request, response) {
@@ -195,13 +194,13 @@ function createEmployee(info) {
   return employee;
 }
 function createService(info, editMode) {
-  if (!editMode) {
-    let id = ObjectId();
-  } else {
-    let id = info._id
-  }
+  // if (!editMode) {
+  //   let id = ObjectId();
+  // } else {
+  //   let id = info._id
+  // }
   let service = {
-    _id: id,
+    _id: 1,
     type: info.type,
     cost: info.cost,
     duration: info.duration,
