@@ -195,12 +195,12 @@ function createEmployee(info) {
 }
 function createService(info, editMode) {
   if (!editMode) {
-    let id = ObjectId();
+    let id = 1;
   } else {
     let id = info._id
   }
   let service = {
-    id: id,
+    _id: id,
     type: info.type,
     cost: info.cost,
     duration: info.duration,
