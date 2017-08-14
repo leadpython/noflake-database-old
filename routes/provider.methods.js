@@ -84,8 +84,8 @@ class Provider {
   }
   // DELETE EMPLOYEE
   deleteEmployee(request, response) {
-    _database.collection(employeeCollection).delete({ _id: request.params.employeeID }).then((data) => {
-      _database.collection(providerCollection).find({ _id: request.params.providerID }).then((data) => {
+    _database.collection(employeeCollection).delete({ _id: ObjectId(request.params.employeeID) }).then((data) => {
+      _database.collection(providerCollection).find({ _id: ObjectId(request.params.providerID) }).then((data) => {
         response.json(data);
       });
     });
