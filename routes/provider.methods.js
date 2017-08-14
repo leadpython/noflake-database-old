@@ -65,10 +65,9 @@ class Provider {
   // GET EMPLOYEES
   getEmployees(request, response) {
     _database.collection(providerCollection).findOne({ '_id': ObjectId(request.params.providerID) }, { 'employees': true }).then((data) => {
-      response.json(data.employees);
-      // _database.collection(employeeCollection).find({ _id: { $in: data.employees } }).toArray((error, data) => {
-      //   response.json(data);
-      // });
+      _database.collection(employeeCollection).find({ _id: { $in: keysToArray(data.employees) } }).toArray((error, data) => {
+        response.json(data);
+      });
     });
   }
   // ADD EMPLOYEE
@@ -200,7 +199,7 @@ function createService(info, editMode) {
     let id = info.id
   }
   let service = {
-    id: id,
+    _id: id,
     type: info.type,
     cost: info.cost,
     duration: info.duration,
@@ -229,7 +228,14 @@ function createAppointment(info) {
 function objectToArray(object) {
   let array = [];
   for (let key in object) {
-    array.push({ key: key, content: object[key] });
+    array.push(object[key]);
+  }
+  return array;
+}
+function keysToArray(object) {
+  let array = [];
+  for (let key in object) {
+    array.push(key);
   }
   return array;
 }
