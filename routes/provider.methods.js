@@ -86,7 +86,9 @@ class Provider {
   addEmployee(request, response) {
     let employee = createEmployee(request.body);
     _database.collection(employeeCollection).delete({ _id: employeee.id }).then((data) => {
-      
+      _database.collection(providerCollection).find({ _id: employee.providerID }).then((data) => {
+        response.json(data);
+      })
     });
   }
   // GET EMPLOYEE SERVICES
