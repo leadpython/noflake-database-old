@@ -103,7 +103,7 @@ class Provider {
     let service = createService(request.body);
     // let set = {};
     // set[`services.${service._id}`] = service;
-    response.json(service);
+    // response.json(service);
     // _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: set }).then((data) => {
     //   response.json('Success!');
     // });
@@ -195,7 +195,7 @@ function createEmployee(info) {
 }
 function createService(info, editMode) {
   if (!editMode) {
-    let id = 1;
+    let id = ObjectId();
   } else {
     let id = info._id
   }
