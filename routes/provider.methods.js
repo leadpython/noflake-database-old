@@ -84,13 +84,11 @@ class Provider {
   }
   // DELETE EMPLOYEE
   deleteEmployee(request, response) {
-    response.json(request.params);
-    // _database.collection(employeeCollection).delete({ _id: ObjectId(request.params.employeeID) }).then((data) => {
-    //     response.json("Success!");
-      // _database.collection(providerCollection).find({ _id: ObjectId(request.params.providerID) }).then((data) => {
-      //   response.json(data);
-      // });
-    // });
+    _database.collection(employeeCollection).deleteOne({ _id: ObjectId(request.params.employeeID) }).then((data) => {
+      _database.collection(providerCollection).findOne({ _id: ObjectId(request.params.providerID) }).then((data) => {
+        response.json("Success!");
+      });
+    });
   }
   // GET EMPLOYEE SERVICES
   getServices(request, response) {
