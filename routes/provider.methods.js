@@ -236,7 +236,7 @@ function objectToArray(object) {
 function keysToArray(object) {
   let array = [];
   for (let key in object) {
-    array.push(key);
+    array.push(ObjectId(key));
   }
   return array;
 }
