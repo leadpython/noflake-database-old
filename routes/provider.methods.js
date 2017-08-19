@@ -194,11 +194,11 @@ function createEmployee(info) {
   return employee;
 }
 function createService(info, editMode) {
-  // if (!editMode) {
-  //   let id = ObjectId();
-  // } else {
-  //   let id = info._id
-  // }
+  if (!editMode) {
+    let id = ObjectId();
+  } else {
+    let id = info._id
+  }
   let service = {
     _id: 1,
     type: info.type,
