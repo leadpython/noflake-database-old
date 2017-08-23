@@ -203,8 +203,7 @@ function createService(info, editMode) {
     _id: id,
     type: info.type,
     cost: info.cost,
-    duration: info.duration,
-    employeeID: info.employeeID
+    duration: info.duration
   };
   return service;
 }
