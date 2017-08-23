@@ -194,10 +194,11 @@ function createEmployee(info) {
   return employee;
 }
 function createService(info, editMode) {
+  let id;
   if (!editMode) {
-    let id = crypto.randomBytes(16).toString('hex');
+    id = crypto.randomBytes(16).toString('hex');
   } else {
-    let id = info._id
+    id = info._id
   }
   let service = {
     _id: id,
