@@ -111,9 +111,10 @@ class Provider {
   editService(request, response) {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.body.employeeID) }).then((employee) => {
       let service = createService(request.body, true);
+      response.json(service);
       var set = {};
       set[`services.${service._id}`] = service;
-      _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.params.employeeID) }, { $set: set }).then((data) => {
+      _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: set }).then((data) => {
         response.json('Success!');
       });
     });
