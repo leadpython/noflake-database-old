@@ -42,7 +42,7 @@ router.post('/providers/employees/services', (request, response) => {
   provider.addService(request, response);
 });
 // Edit Service
-router.put('/providers/:providerID/employees/:employeeID/services', (request, response) => {
+router.put('/providers/employees/services', (request, response) => {
   provider.editService(request, response);
 });
 // Delete Service
