@@ -2,7 +2,7 @@ var crypto = require('crypto');
 var ObjectId = require('mongodb').ObjectId;
 var providerCollection = 'providers';
 var employeeCollection = 'employees';
-var appointmentsCollection = 'appointments';
+var appointmentCollection = 'appointments';
 var _database;
 
 class Provider {
@@ -139,8 +139,13 @@ class Provider {
   // ADD APPOINTMENT
   addAppointment(request, response) {
     let appointment = createAppointment(request.body);
-    _database.collection(appointmentsCollection).insert(appointment).then((appointment) => {
-      _database.collection(employeeCollection).updateOne({ _id: ObjectId(appointment.employeeID) }, { $push: { services: appointment._id } }).then((data) => {
+    _database.collection(appointmentCollection).insert(appointment).then((appointment) => {
+      let set = {};
+      set[`appointments.${data.ops[0]._id.toString()}`] = true;
+      _database.collection(employeeCollection).updateOne({ _id: ObjectId(appointment.employeeID) }, { $set: { appointments: appointment._id } }).then((data) => {
+        if (typeof request.body.clientID === "string" && request.body.clientID.length > 0) {
+          // add to client appointments
+        }
         response.json('Success!');
       });
     });

@@ -56,7 +56,7 @@ router.get('/providers/:providerID/employees/:employeeID/appointments', (request
   provider.getAppointments(request, response);
 });
 // Add Appointment
-router.post('/providers/:providerID/employees/:employeeID/appointments', (request, response) => {
+router.post('/providers/employees/appointments', (request, response) => {
   provider.addAppointment(request, response);
 });
 // Edit Appointment
