@@ -121,10 +121,9 @@ class Provider {
   }
   // DELETE EMPLOYEE SERVICE
   deleteService(request, response) {
-    _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }).then((employee) => {
-      let service = createService(request.body, true);
-      delete employee.services[request.body.id];
-      _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.params.employeeID) }, employee).then((data) => {
+    _database.collection(employeeCollection).findOne({ _id: ObjectId(request.body.employeeID) }).then((employee) => {
+      delete employee.services[request.body._id];
+      _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, employee).then((data) => {
         response.json('Success!');
       });
     });
@@ -153,6 +152,7 @@ class Provider {
       response.json('Success!');
     })
   }
+  // DELETE APPOINTMENT
   deleteAppointment(request, response) {
     _database.collection(appointmentsCollection).deleteOne({ _id: ObjectId(request.body.id) }).then((data) => {
       response.json('Success!');
