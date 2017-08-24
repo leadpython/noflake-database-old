@@ -46,7 +46,7 @@ router.put('/providers/employees/services', (request, response) => {
   provider.editService(request, response);
 });
 // Delete Service
-router.delete('providers/:id/services/:service', (request, response) => {
+router.delete('/providers/employees/services', (request, response) => {
   provider.deleteService(request, response);
 });
 
