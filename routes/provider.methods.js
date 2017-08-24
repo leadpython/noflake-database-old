@@ -123,7 +123,7 @@ class Provider {
   deleteService(request, response) {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.body.employeeID) }).then((employee) => {
       delete employee.services[request.body._id];
-      _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, employee).then((data) => {
+      _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: { services: employee.services } }).then((data) => {
         response.json('Success!');
       });
     });
