@@ -52,7 +52,7 @@ router.delete('/providers/employees/services', (request, response) => {
 
 // PROVIDER APPOINTMENTS
 // Get Appointments
-router.get('/providers/:providerID/employees/:employeeID/appointments', (request, response) => {
+router.get('/providers/employees/:employeeID/appointments', (request, response) => {
   provider.getAppointments(request, response);
 });
 // Add Appointment

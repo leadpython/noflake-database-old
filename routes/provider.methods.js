@@ -112,7 +112,7 @@ class Provider {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.body.employeeID) }).then((employee) => {
       let service = createService(request.body, true);
       response.json(service);
-      var set = {};
+      let set = {};
       set[`services.${service._id}`] = service;
       _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: set }).then((data) => {
         response.json('Success!');
@@ -128,10 +128,10 @@ class Provider {
       });
     });
   }
-  // GET EMPLOYEE APPOINTMENTS
+  // GET EMPLOYEE ALL APPOINTMENTS
   getAppointments(request, response) {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { appointments: true }).then((employee) => {
-      _database.collection(appointmentsCollection).find({ _id: { $in: employee.appointments } }).toArray((appointments) => {
+      _database.collection(appointmentsCollection).find({ _id: { $in: keysToArray(employee.appointments) } }).toArray((appointments) => {
         response.json(appointments);
       });
     })
