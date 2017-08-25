@@ -59,12 +59,8 @@ router.get('/providers/employees/:employeeID/appointments', (request, response) 
 router.post('/providers/employees/appointments', (request, response) => {
   provider.addAppointment(request, response);
 });
-// Edit Appointment
-router.put('/providers/:providerID/employees/:employeeID/appointments', (request, response) => {
-  provider.editAppointment(request, response);
-});
 // Delete Appointment
-router.delete('/providers/:providerID/employees/:employeeID/appointments', (request, response) => {
+router.delete('/providers/employees/appointments', (request, response) => {
   provider.deleteAppointment(request, response);
 });
 
