@@ -142,10 +142,7 @@ class Provider {
     _database.collection(appointmentCollection).insert(appointment).then((appointment) => {
       let set = {};
       set[`appointments.${data.ops[0]._id.toString()}`] = true;
-      _database.collection(employeeCollection).updateOne({ _id: ObjectId(appointment.employeeID) }, { $set: { appointments: appointment._id } }).then((data) => {
-        if (typeof request.body.clientID === "string" && request.body.clientID.length > 0) {
-          // add to client appointments
-        }
+      _database.collection(employeeCollection).updateOne({ _id: ObjectId(appointment.employeeID) }, { $set: set }).then((data) => {
         response.json('Success!');
       });
     });
@@ -226,7 +223,6 @@ function createAppointment(info) {
       end: info.timeslot.end
     },
     serviceID: info.serviceID,
-    providerID: info.providerID,
     employeeID: info.employeeID,
   };
   return appointment;
