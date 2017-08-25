@@ -131,12 +131,12 @@ class Provider {
   // GET EMPLOYEE ALL APPOINTMENTS
   getAppointments(request, response) {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { appointments: true }).then((employee) => {
-      _database.collection(appointmentsCollection).find({ _id: { $in: keysToArray(employee.appointments) } }).toArray((appointments) => {
-        response.json(appointments);
+      _database.collection(appointmentsCollection).find({ _id: { $in: keysToArray(employee.appointments) } }).toArray((error, data) => {
+        response.json(data);
       });
     })
   }
-  // ADD APPOINTMENT
+  // ADD EMPLOYEE APPOINTMENT
   addAppointment(request, response) {
     let appointment = createAppointment(request.body);
     _database.collection(appointmentCollection).insert(appointment).then((data) => {
