@@ -129,14 +129,15 @@ class Provider {
     });
   }
   // GET EMPLOYEE ALL APPOINTMENTS
-  getAppointments(request, response) {
+  getEmployeeAllAppointments(request, response) {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { appointments: true }).then((employee) => {
+      response.json(employee);
       _database.collection(appointmentsCollection).find({ _id: { $in: keysToArray(employee.appointments) } }).toArray((error, data) => {
         response.json(data);
       });
     })
   }
-  // ADD EMPLOYEE APPOINTMENT
+  // ADD APPOINTMENT
   addAppointment(request, response) {
     let appointment = createAppointment(request.body);
     _database.collection(appointmentCollection).insert(appointment).then((data) => {
