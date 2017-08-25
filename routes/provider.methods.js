@@ -131,8 +131,7 @@ class Provider {
   // GET EMPLOYEE ALL APPOINTMENTS
   getEmployeeAllAppointments(request, response) {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { appointments: true }).then((employee) => {
-      response.json(keysToArray(employee.appointments));
-      _database.collection(appointmentsCollection).find({ _id: { $in: keysToArray(employee.appointments) } }).toArray((error, data) => {
+      _database.collection(appointmentCollection).find({ _id: { $in: keysToArray(employee.appointments) } }).toArray((error, data) => {
         response.json(data);
       });
     })
@@ -153,7 +152,9 @@ class Provider {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.body.employeeID) }).then((employee) => {
       delete employee.appointments[request.body._id];
       _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: { appointments: employee.appointments } }).then((data) => {
-        response.json('Success!');
+        _database.collection(appointmentCollection).deleteOne({ _id: request.body._id }).then((data) => {
+          response.json('Success!');
+        });
       });
     });
   }
