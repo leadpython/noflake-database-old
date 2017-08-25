@@ -139,7 +139,7 @@ class Provider {
   // ADD APPOINTMENT
   addAppointment(request, response) {
     let appointment = createAppointment(request.body);
-    _database.collection(appointmentCollection).insert(appointment).then((appointment) => {
+    _database.collection(appointmentCollection).insert(appointment).then((data) => {
       let set = {};
       set[`appointments.${data.ops[0]._id.toString()}`] = true;
       _database.collection(employeeCollection).updateOne({ _id: ObjectId(appointment.employeeID) }, { $set: set }).then((data) => {
