@@ -147,17 +147,13 @@ class Provider {
       });
     });
   }
-  // EDIT APPOINTMENT
-  editAppointment(request, response) {
-    let appointment = createAppointment(request.body);
-    _database.collection(appointmentsCollection).updateOne({ _id: ObjectId(appointment._id) }, appointment).then((data) => {
-      response.json('Success!');
-    })
-  }
   // DELETE APPOINTMENT
   deleteAppointment(request, response) {
-    _database.collection(appointmentsCollection).deleteOne({ _id: ObjectId(request.body.id) }).then((data) => {
-      response.json('Success!');
+    _database.collection(employeeCollection).findOne({ _id: ObjectId(request.body.employeeID) }).then((employee) => {
+      delete employee.appointments[request.body._id];
+      _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: { appointments: employee.appointments } }).then((data) => {
+        response.json('Success!');
+      });
     });
   }
   setDatabase(database) {
