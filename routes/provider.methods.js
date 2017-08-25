@@ -134,7 +134,20 @@ class Provider {
       _database.collection(appointmentCollection).find({ _id: { $in: keysToArray(employee.appointments) } }).toArray((error, data) => {
         response.json(data);
       });
-    })
+    });
+  }
+  // GET EMPLOYEE APPOINTMENTS ON DAY
+  getEmployeeAppointmentsOnDay(request, response) {
+    _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { appointments: true }).then((employee) => {
+      _database.collection(appointmentCollection).find({ _id: { $in: keysToArray(employee.appointments) } }).toArray((error, data) => {
+        var appointmentsOnDay = data.map(function(appointment) {
+          if (appointment.day === request.params.day && appointment.month === request.params.month && appointment.year === request.params.year) {
+            return appointment;
+          }
+        });
+        response.json(appointmentsOnDay);
+      });
+    });
   }
   // ADD APPOINTMENT
   addAppointment(request, response) {

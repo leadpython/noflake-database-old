@@ -51,9 +51,13 @@ router.delete('/providers/employees/services', (request, response) => {
 });
 
 // PROVIDER APPOINTMENTS
-// Get Appointments
+// Get All Appointments
 router.get('/providers/employees/:employeeID/appointments', (request, response) => {
   provider.getEmployeeAllAppointments(request, response);
+});
+// Get Appointments On Day
+router.get('/providers/employees/:employeeID/appointments/:day/:month/:year', (request, response) => {
+  provider.getEmployeeAppointmentsOnDay(request, response);
 });
 // Add Appointment
 router.post('/providers/employees/appointments', (request, response) => {
