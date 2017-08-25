@@ -152,7 +152,7 @@ class Provider {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.body.employeeID) }).then((employee) => {
       delete employee.appointments[request.body._id];
       _database.collection(employeeCollection).updateOne({ _id: ObjectId(request.body.employeeID) }, { $set: { appointments: employee.appointments } }).then((data) => {
-        _database.collection(appointmentCollection).deleteOne({ _id: request.body._id }).then((data) => {
+        _database.collection(appointmentCollection).deleteOne({ _id: ObjectId(request.body._id) }).then((data) => {
           response.json('Success!');
         });
       });
