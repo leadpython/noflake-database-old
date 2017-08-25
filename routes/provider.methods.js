@@ -131,6 +131,7 @@ class Provider {
   // GET EMPLOYEE ALL APPOINTMENTS
   getEmployeeAllAppointments(request, response) {
     _database.collection(employeeCollection).findOne({ _id: ObjectId(request.params.employeeID) }, { appointments: true }).then((employee) => {
+      response.json(employee.appointments);
       _database.collection(appointmentsCollection).find({ _id: { $in: keysToArray(employee.appointments) } }).toArray((error, data) => {
         response.json(data);
       });
