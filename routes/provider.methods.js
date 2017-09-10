@@ -26,8 +26,9 @@ class Provider {
   // REGISTER
   register(request, response) {
     let payload = {};
+    let provider = initializeProvider(request.body);
     // check if user already exists first
-    _database.collection(providerCollection).findOne({ 'handle': request.body.handle }).then((data) => {
+    _database.collection(providerCollection).findOne({ '_id': ObjectId(request.body.providerID) }).then((data) => {
       if (data) {
         // if user already exists
         // respond with registration failure
@@ -36,7 +37,6 @@ class Provider {
       } else {
         // if user does not exist
         // register with information
-        let provider = initializeProvider(request.body);
         _database.collection(providerCollection).insert(provider).then((data) => {
           response.json(payload);
         });
@@ -183,16 +183,11 @@ module.exports = provider;
 // ----- HELPER METHODS -----
 
 function initializeProvider(info) {
-  let salt = crypto.randomBytes(16).toString('hex');
-  let hash = crypto.pbkdf2Sync(info.password, salt, 1000, 64, 'sha512').toString('hex');
   let provider = {
+    _id: ObjectId(info.providerID),
     handle: info.handle,
     email: info.email,
-    name: info.name,
-    credentials: {
-      hash: hash,
-      salt: salt
-    },
+    name: '',
     employees: {},
   };
   return provider;
